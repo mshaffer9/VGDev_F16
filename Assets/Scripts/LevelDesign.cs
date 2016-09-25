@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class LevelDesign : MonoBehaviour {
 
-	//public static LevelManager instance;
+	public static LevelDesign instance;
 
     //Holds all objects that need to move in the level. Monsters, grandma, cats, all of them.
 	public Movement[] monsters;
@@ -100,9 +100,9 @@ public class LevelDesign : MonoBehaviour {
         {
             for (int j = 0; j < traps.Length; j++)
             {
-                if ((movingObjects[i].transform.position == traps[j].transform.position) && traps[j].active)
+                if ((monsters[i].transform.position == traps[j].transform.position) && traps[j].active)
                 {
-                    movingObjects[i].active = false;
+                    monsters[i].active = false;
                 }
             }
         }
