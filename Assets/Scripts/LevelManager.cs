@@ -6,8 +6,8 @@ public class LevelManager : MonoBehaviour {
 
 	public static LevelManager instance;
 
-    //Holds all objects that need to move in the level. Monsters, grandma, cats, all of them.
-	public Movement[] movingObjects;
+	public Movement[] monsters;
+    public Movement granny;
 
     //Timer stuff
 	public float timer;
@@ -57,12 +57,13 @@ public class LevelManager : MonoBehaviour {
         if (executing) {
 			if(timerValue < 0) {
 				timerValue = timer;
-				foreach (Movement m in movingObjects) {
+				foreach (Movement m in monsters) {
                     if (m.active)
                     {
                         m.Move();
                     }
 				}
+                granny.Move();
 			} else {
 				timerValue -= Time.deltaTime;
 			}
@@ -73,42 +74,39 @@ public class LevelManager : MonoBehaviour {
         if (won)
         {
             executing = false;
-            //Debug.Log("ya done won it");
         }
 
         //if u ded
         if (dead)
         {
             executing = false;
-            //Debug.Log("U DED");
         }
 	}
 
     //Handles collisions
 	void HandleCollision() {
-        //note: GRANDMA MUST ALWAYS BE AT INDEX ZERO IN MOVINGOBJECTS!
         //Check for gma collisions w monsters
-        for (int i = 1; i < movingObjects.Length; i++)
+        for (int i = 0; i < monsters.Length; i++)
         {
-            if (movingObjects[0].transform.position == movingObjects[i].transform.position)
+            if (granny.transform.position == monsters[i].transform.position)
             {
                 dead = true;
             }
         }
 
         //Check for monster collision w traps
-        for (int i = 1; i < movingObjects.Length; i++)
+        for (int i = 0; i < monsters.Length; i++)
         {
             for (int j = 0; j < traps.Length; j++)
             {
-                if ((movingObjects[i].transform.position == traps[j].transform.position) && traps[j].active)
+                if ((monsters[i].transform.position == traps[j].transform.position) && traps[j].active)
                 {
-                    movingObjects[i].active = false;
+                    monsters[i].active = false;
                 }
             }
         }
         //Check if gma is at end square
-        if (movingObjects[0].transform.position == endSquare)
+        if (granny.transform.position == endSquare)
         {
             won = true;
         }
