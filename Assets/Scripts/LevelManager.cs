@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class LevelManager : MonoBehaviour {
 
 	public static LevelManager instance;
+
+    //How many sides does the level have?
+    public int numSides = 5;
 
 	public Movement[] monsters;
     public Movement granny;
@@ -14,43 +19,44 @@ public class LevelManager : MonoBehaviour {
 	private float timerValue;
 
     //Signifies end location for level
-    public Vector3 endSquare;
+    public Movement endSquare;
     //Holds all traps
     public Trap[] traps;
+
+    //Keeping track of UI levels
+    public GameObject actionLayer;
+    public GameObject trapLayer;
+    public GameObject ghostLayer;
 
     //Signifies active, win, and lose states
 	private bool executing;
     private bool won;
     private bool dead;
 
-    //Creates instance of level manager, sets timer, disables all traps
+    //Creates instance of level manager, sets timer
 	void Start () {
 		instance = this;
 		timerValue = timer;
-
-        foreach (Trap t in traps)
-        {
-            t.GetComponent<SpriteRenderer>().enabled = false;
-        }
-	}
+    }
 	
 	void Update () {
 
         //Hitting space activates the level; No more movements can be input.
 		if(Input.GetKeyDown(KeyCode.Space)) {
+            populateTrapArray();
 			executing = true;
 		}
 
-        //Hitting R resets the scene
+        //Hitting R resets the scene. TODO: FIX THIS WHEN MENUS ARE SET
         if (Input.GetKeyDown(KeyCode.R))
         {
             SceneManager.LoadScene(0);
         }
 
-        //If the traps need to be activated, DO THAT JUNK
-        foreach (Trap t in traps)
+        //if u ded
+        if (dead)
         {
-            t.turnOnIfApplicable();
+            executing = false;
         }
 
         //if the level is active...
@@ -75,50 +81,42 @@ public class LevelManager : MonoBehaviour {
         {
             executing = false;
         }
-
-        //if u ded
-        if (dead)
-        {
-            executing = false;
-        }
 	}
 
-    //Handles collisions
+    //TODO: MAKE THIS NOT SUCK ASS
 	void HandleCollision() {
         //Check for gma collisions w monsters
         for (int i = 0; i < monsters.Length; i++)
         {
-            if (granny.transform.position == monsters[i].transform.position)
+            if (granny.transform.parent.Equals(monsters[i].transform.parent))
             {
                 dead = true;
+                granny.GetComponent<Image>().enabled = false;
             }
         }
 
-        //Check for monster collision w traps
+        //Check for monster collision w traps. ACCOUNT FOR LAYERS
         for (int i = 0; i < monsters.Length; i++)
         {
             for (int j = 0; j < traps.Length; j++)
             {
-                if ((monsters[i].transform.position == traps[j].transform.position) && traps[j].active)
+                if (monsters[i].transform.GetSiblingIndex() == traps[j].transform.GetSiblingIndex())
                 {
                     monsters[i].active = false;
                 }
             }
         }
+
         //Check if gma is at end square
-        if (granny.transform.position == endSquare)
+        /*if (granny.transform.GetSiblingIndex() == endSquare.transform.GetSiblingIndex())
         {
             won = true;
-        }
+        }*/
 
     }
 
-    //TODO: Refactor to account for multiple traps that all need to go at different times
-    public void clickThing()
+    public void populateTrapArray()
     {
-        foreach (Trap t in traps)
-        {
-            t.active = true;
-        }
+        //aaaaaa
     }
 }
