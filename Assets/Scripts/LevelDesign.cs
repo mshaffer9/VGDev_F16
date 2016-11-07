@@ -2,10 +2,11 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 
-public class LevelManager : MonoBehaviour {
+public class LevelDesign : MonoBehaviour {
 
-	public static LevelManager instance;
+	public static LevelDesign instance;
 
+    //Holds all objects that need to move in the level. Monsters, grandma, cats, all of them.
 	public Movement[] monsters;
     public Movement granny;
 
