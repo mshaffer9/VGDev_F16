@@ -5,21 +5,22 @@ using System.Collections;
 //TODO: refactor to handle types, 
 public class Trap : MonoBehaviour {
 
-    public bool active;
-    //Assign type, handle action when called on accordingly
-    public enum TYPE { Sticky, Pushy, Switchy};
-	
-    //Makes trap visible if active
-	public void turnOnIfApplicable() {
-	    if (active)
-        {
-            GetComponent<SpriteRenderer>().enabled = true;
-        }
+	public bool active, interruptMovement;
+
+	protected RectTransform rect;
+
+	protected void Start() {
+		rect = GetComponent<RectTransform>();
 	}
 
-    //springs active traps
-    public void spring()
-    {
-        //TODO: handle each type of trap
-    }
+    /// <summary>
+    /// Override this function to handle HOW the trap is 'sprung'
+    /// </summary>
+    /// <param name="target">Target.</param>
+	public virtual void Spring(Movement target) {	}
+
+	/// <summary>
+	/// Override this to make the target move a specific way
+	/// </summary>
+	public virtual void HandleTrap(Movement target) { }
 }
