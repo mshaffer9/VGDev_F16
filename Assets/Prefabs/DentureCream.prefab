@@ -67,8 +67,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8394431066f348b697f0a3e0a482df9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   interruptMovement: 1
+  changeDir: 0
 --- !u!222 &222000013474791244
 CanvasRenderer:
   m_ObjectHideFlags: 1

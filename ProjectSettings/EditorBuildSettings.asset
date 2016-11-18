@@ -9,7 +9,27 @@ EditorBuildSettings:
     path: Assets/Scenes/Menus/Main Menu.unity
   - enabled: 1
     path: Assets/Scenes/Menus/Level Select.unity
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/demos and testing/OH DANG SON.unity
   - enabled: 1
+    path: Assets/Scenes/Menus/Instructions.unity
+  - enabled: 1
+    path: Assets/Scenes/Levels/bedroom.unity
+  - enabled: 1
     path: Assets/Scenes/Menus/Credits.unity
+  - enabled: 1
+    path: Assets/Scenes/Menus/Level Select ONEDONE.unity
+  - enabled: 1
+    path: Assets/Scenes/Levels/cafeteria.unity
+  - enabled: 1
+    path: Assets/Scenes/Levels/pool.unity
+  - enabled: 1
+    path: Assets/Scenes/Levels/garden.unity
+  - enabled: 1
+    path: Assets/Scenes/Menus/Level Select TWODONE.unity
+  - enabled: 1
+    path: Assets/Scenes/Menus/Level Select THREEDONE.unity
+  - enabled: 1
+    path: Assets/Scenes/Menus/Level Select FOURDONE.unity
+  - enabled: 1
+    path: Assets/Scenes/Menus/Done.unity

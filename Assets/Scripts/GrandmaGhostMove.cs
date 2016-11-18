@@ -31,28 +31,28 @@ public class GrandmaGhostMove : MonoBehaviour {
         {
             path.Enqueue(KeyCode.W);
 			rect.anchoredPosition = position;
-			position += Vector2.up*50f;
+			position += Vector2.up*(LevelManager.instance.moveAmt);
 			didMove = true;
         }
 		if (canMoveLeft && Input.GetKeyDown(KeyCode.A) && position.x > 0f)
         {
             path.Enqueue(KeyCode.A);
 			rect.anchoredPosition = position;
-			position += Vector2.left*50f;
+			position += Vector2.left* (LevelManager.instance.moveAmt);
 			didMove = true;
         }
 		if (canMoveDown && Input.GetKeyDown(KeyCode.S) && position.y > -50f*(LevelManager.instance.numSides-1))
         {
             path.Enqueue(KeyCode.S);
 			rect.anchoredPosition = position;
-			position += Vector2.down*50f;
+			position += Vector2.down* (LevelManager.instance.moveAmt);
 			didMove = true;
         }
 		if (canMoveRight && Input.GetKeyDown(KeyCode.D) && position.x < 50f*(LevelManager.instance.numSides-1))
         {
             path.Enqueue(KeyCode.D);
 			rect.anchoredPosition = position;
-			position += Vector2.right*50f;
+			position += Vector2.right* (LevelManager.instance.moveAmt);
 			didMove = true;
         }
 

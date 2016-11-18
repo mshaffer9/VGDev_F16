@@ -5,6 +5,8 @@ public class Trap_DentureCream : Trap {
 
 	public override void Spring (Movement target)
 	{
+        changeDir = false;
+        interruptMovement = true;
 		if(target == null || rect == null) return;
 		base.Spring (target);
 		if(target.position == rect.anchoredPosition) {

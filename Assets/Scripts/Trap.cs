@@ -5,7 +5,7 @@ using System.Collections;
 //TODO: refactor to handle types, 
 public class Trap : MonoBehaviour {
 
-	public bool active, interruptMovement;
+	public bool active, interruptMovement, changeDir;
 
 	protected RectTransform rect;
 

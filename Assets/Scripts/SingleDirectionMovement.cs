@@ -42,13 +42,22 @@ public class SingleDirectionMovement : Movement {
 	public override void Move (bool canMoveUp, bool canMoveDown, bool canMoveRight, bool canMoveLeft)
 	{
 		base.Move (canMoveUp, canMoveDown, canMoveRight, canMoveLeft);
-		if(trap != null && trap.interruptMovement) return;
+        if (trap != null && trap.active)
+        {
+            if (trap.changeDir)
+            {
+                upDown = !upDown;
+                trap.active = false;
+            } //don't need to deactivate the trap if it's just sticky
+
+            return;
+        }
 
 		if(upDown) {
 			if(movingPositive) {
 				if(distanceTraveled < Mathf.Abs(distance)) {
-					if (canMoveUp && rect.anchoredPosition.y < -50f) {
-						position += Vector2.up*50f;
+					if (canMoveUp && rect.anchoredPosition.y < -LevelManager.instance.moveAmt) {
+						position += Vector2.up*LevelManager.instance.moveAmt;
 						StartCoroutine(MoveAnim(position));
                         distanceTraveled++;
 					} else {
@@ -61,8 +70,8 @@ public class SingleDirectionMovement : Movement {
 				}
 			} else {
 				if(distanceTraveled < Mathf.Abs(distance)) {
-					if (canMoveDown && rect.anchoredPosition.y > -50*numSides) {
-						position -= Vector2.up*50f;
+					if (canMoveDown && rect.anchoredPosition.y > -LevelManager.instance.moveAmt*numSides) {
+						position -= Vector2.up*LevelManager.instance.moveAmt;
 						StartCoroutine(MoveAnim(position));
 						distanceTraveled++;
 					} else {
@@ -77,8 +86,8 @@ public class SingleDirectionMovement : Movement {
 		} else {
 			if(movingPositive) {
 				if(distanceTraveled < Mathf.Abs(distance)) {
-					if (canMoveRight && rect.anchoredPosition.x < 50f*(numSides-1)) {
-						position += Vector2.right*50f;
+					if (canMoveRight && rect.anchoredPosition.x < LevelManager.instance.moveAmt*(numSides-1)) {
+						position += Vector2.right* LevelManager.instance.moveAmt;
 						StartCoroutine(MoveAnim(position));
 						distanceTraveled++;
 					} else {
@@ -92,8 +101,9 @@ public class SingleDirectionMovement : Movement {
 			} else {
 				if(distanceTraveled < Mathf.Abs(distance)) {
 					if (canMoveLeft && rect.anchoredPosition.x > 0) {
-						position -= Vector2.right*50f;
-						StartCoroutine(MoveAnim(position));
+                        position -= Vector2.right * LevelManager.instance.moveAmt;
+
+                        StartCoroutine(MoveAnim(position));
 						distanceTraveled++;
 					} else {
 						movingPositive = !movingPositive;

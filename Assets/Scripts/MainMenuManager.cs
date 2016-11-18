@@ -4,11 +4,15 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuManager : MonoBehaviour {
 
+    public GameObject music;
+
 	public void PlayPressed() {
+        DontDestroyOnLoad(music);
 		SceneManager.LoadScene(2);
 	}
 
 	public void CreditsPressed() {
-		SceneManager.LoadScene("Credits");
+        DontDestroyOnLoad(music);
+        SceneManager.LoadScene(4);
 	}
 }

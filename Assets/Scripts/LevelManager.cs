@@ -9,6 +9,8 @@ public class LevelManager : MonoBehaviour {
 
 	public static LevelManager instance;
 
+    public GameObject music;
+
     /// <summary>
 	/// How many sides does the level have?
     /// </summary>
@@ -32,7 +34,7 @@ public class LevelManager : MonoBehaviour {
     //Timer stuff
 	public float timer;
 	private float timerValue;
-	private bool grannyMovedLast;
+	private bool grannyMovedLast = false;
 
     //Signifies end location for level
 	public RectTransform spawnPoint, winPoint;
@@ -71,6 +73,12 @@ public class LevelManager : MonoBehaviour {
 
 	//Reference to the game state text object
 	public Text gameStateText;
+    //Reference to the key instruction text object
+    public Text instText;
+
+    //How wide the game sqare are depending on num of sides, thus how far to move
+    [HideInInspector]
+    public int moveAmt;
 
 	#region MonoBehavior Functions
     //Creates instance of level manager, sets timer
@@ -79,6 +87,7 @@ public class LevelManager : MonoBehaviour {
 		entities = FindObjectsOfType<Movement>();
 		ghost = FindObjectOfType<GrandmaGhostMove>();
 		granny = FindObjectOfType<GrandmaMove>();
+        moveAmt = 300 / numSides;
 
 		traps = new Dictionary<Trap, int>();
 		for(int i = 0; i < trapCount.Length; i++) {
@@ -130,12 +139,13 @@ public class LevelManager : MonoBehaviour {
 
 	#region Game State Machine
 	private void HandlePlanning() {
-		bool canMoveUp = true, canMoveDown = true, canMoveLeft = true, canMoveRight = true;
+        instText.text = instTextSet();
+        bool canMoveUp = true, canMoveDown = true, canMoveLeft = true, canMoveRight = true;
 		for(int i = 0; i < obstacles.Length; i++) {
-			if(ghost.position + Vector2.up*50f == obstacles[i].anchoredPosition) canMoveUp = false;
-			if(ghost.position + Vector2.down*50f == obstacles[i].anchoredPosition) canMoveDown = false;
-			if(ghost.position + Vector2.left*50f == obstacles[i].anchoredPosition) canMoveLeft = false;
-			if(ghost.position + Vector2.right*50f == obstacles[i].anchoredPosition) canMoveRight = false;
+			if(ghost.position + Vector2.up*moveAmt == obstacles[i].anchoredPosition) canMoveUp = false;
+			if(ghost.position + Vector2.down*moveAmt == obstacles[i].anchoredPosition) canMoveDown = false;
+			if(ghost.position + Vector2.left*moveAmt == obstacles[i].anchoredPosition) canMoveLeft = false;
+			if(ghost.position + Vector2.right*moveAmt == obstacles[i].anchoredPosition) canMoveRight = false;
 		}
 
 		//Updates the ghost's position only in the planning stage
@@ -173,10 +183,10 @@ public class LevelManager : MonoBehaviour {
 					if (m.active) {
 						bool canMoveUp = true, canMoveDown = true, canMoveLeft = true, canMoveRight = true;
 						for(int i = 0; i < obstacles.Length; i++) {
-							if(m.position + Vector2.up*50f == obstacles[i].anchoredPosition) canMoveUp = false;
-							if(m.position + Vector2.down*50f == obstacles[i].anchoredPosition) canMoveDown = false;
-							if(m.position + Vector2.left*50f == obstacles[i].anchoredPosition) canMoveLeft = false;
-							if(m.position + Vector2.right*50f == obstacles[i].anchoredPosition) canMoveRight = false;
+							if(m.position + Vector2.up*moveAmt == obstacles[i].anchoredPosition) canMoveUp = false;
+							if(m.position + Vector2.down*moveAmt == obstacles[i].anchoredPosition) canMoveDown = false;
+							if(m.position + Vector2.left*moveAmt == obstacles[i].anchoredPosition) canMoveLeft = false;
+							if(m.position + Vector2.right*moveAmt == obstacles[i].anchoredPosition) canMoveRight = false;
 						}
 
 						m.Move(canMoveUp, canMoveDown, canMoveRight, canMoveLeft);
@@ -206,43 +216,55 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	private void HandleWin() {
-
-	}
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            SceneManager.LoadScene(whichSelectScreen());
+        }
+    }
 	#endregion
 
 
 	#region Helper Functions
 	void HandleCollision() {
-		foreach (Movement m in entities) {
-			if(m.active) {
-				if(m.position == granny.position) {
-					KillGranny();
-				}
-				for(int i = 0; i < spawnedTraps.Count; i++) {
-					spawnedTraps[i].GetComponent<Trap>().Spring(m);
-				}
-			}
-		}
+		
 		if(granny.position == winPoint.anchoredPosition && kittyCollected) {
-			WinGranny();
+            WinGranny();
 		} else if(granny.position == kitty.anchoredPosition) {
 			kittyCollected = true;
 			kitty.GetComponent<CanvasGroup>().alpha = 0f;
 		} else if(granny.path.Count == 0) {
 			ResetGranny();
 		}
+
+        foreach (Movement m in entities)
+        {
+            if (m.active)
+            {
+                if (m.position == granny.position)
+                {
+                    KillGranny();
+                }
+                for (int i = 0; i < spawnedTraps.Count; i++)
+                {
+                    spawnedTraps[i].GetComponent<Trap>().Spring(m);
+                }
+            }
+        }
     }
 
 	void KillGranny() {
 		state = GameState.Dead;
 		gameStateText.text = state.ToString();
-	}
+        instText.text = instTextSet();
+    }
 
 	void ResetGranny() {
 		state = GameState.Planning;
 		granny.ResetGranny(spawnPoint.anchoredPosition);
 		ghost.ResetGhost(spawnPoint.anchoredPosition);
 		gameStateText.text = state.ToString();
+        grannyMovedLast = false;
+        kittyCollected = false;
 
 		for(int i = 0; i < entities.Length; i++) {
 			entities[i].Reset(startingPositions[i]);
@@ -267,17 +289,21 @@ public class LevelManager : MonoBehaviour {
 			//Sets the available number of traps
 			inventory.GetChild(i).GetChild(0).GetComponent<Text>().text = traps[availableTraps[i].GetComponent<Trap>()].ToString();
 		}
-	}
+
+        instText.text = instTextSet();
+    }
 
 	void GoGrannyGo() {
 		state = GameState.Executing;
 		granny.path = ghost.path;
 		gameStateText.text = state.ToString();
-	}
+        instText.text = instTextSet();
+    }
 
 	void WinGranny() {
 		state = GameState.Win;
 		gameStateText.text = state.ToString();
+        instText.text = instTextSet();
 	}
 
 	public float MoveLerpValue() {
@@ -285,4 +311,43 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	#endregion
+
+    private String instTextSet()
+    {
+        if (state.Equals(GameState.Planning))
+        {
+            return "[Space] to activate level";
+        } else if (state.Equals(GameState.Executing))
+        {
+            return " ";
+        } else if (state.Equals(GameState.Dead))
+        {
+            return "[Space] to restart level";
+        } else if (state.Equals(GameState.Win))
+        {
+            return "[Space] to continue";
+        } else
+        {
+            return " ";
+        }
+    }
+
+    private int whichSelectScreen()
+    {
+        if (SceneManager.GetActiveScene().name == "bedroom")
+        {
+            return 5;
+        } else if (SceneManager.GetActiveScene().name == "cafeteria")
+        {
+            return 9;
+        } else if (SceneManager.GetActiveScene().name == "pool")
+        {
+            return 10;
+        } else if (SceneManager.GetActiveScene().name == "garden")
+        {
+            return 11;
+        } else {
+            return 0;
+        }
+    }
 }

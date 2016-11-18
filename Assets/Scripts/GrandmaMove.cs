@@ -15,6 +15,7 @@ public class GrandmaMove : MonoBehaviour {
 
 	void Start() {
 		rect = GetComponent<RectTransform>();
+        this.position = rect.anchoredPosition;
 	}
 
 	public void ResetGranny(Vector2 position) {
@@ -30,19 +31,19 @@ public class GrandmaMove : MonoBehaviour {
 			switch(nextMovement) {
 
 			case KeyCode.W:
-				position += Vector2.up*50f;
+				position += Vector2.up* (LevelManager.instance.moveAmt);
 				StartCoroutine(MoveAnim(position));
 				break;
 			case KeyCode.A:
-				position += Vector2.left*50f;
+				position += Vector2.left* (LevelManager.instance.moveAmt);
 				StartCoroutine(MoveAnim(position));
 				break;
 			case KeyCode.S:
-				position += Vector2.down*50f;
+				position += Vector2.down* (LevelManager.instance.moveAmt);
 				StartCoroutine(MoveAnim(position));
 				break;
 			case KeyCode.D:
-				position += Vector2.right*50f;
+				position += Vector2.right* (LevelManager.instance.moveAmt);
 				StartCoroutine(MoveAnim(position));
 				break;
 			default:
